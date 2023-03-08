@@ -90,8 +90,7 @@ public class CSV2JSON {
                     if (headers.length > rows.length) {
                         isValid = false;
                         rows[rows.length - 1] = "***";
-                    }
-                    if (headers.length < rows.length) {
+                    } else if (headers.length < rows.length) {
                         throw new CSVMissingDataException("In file " + fileName
                                 + " not converted to JSON: Invalid data for line "+ lineCount + splitter
                                 + "In file " + fileName + " line " + lineCount + "\nLine "+lineCount+" has invalid data.\n");
@@ -110,7 +109,7 @@ public class CSV2JSON {
                     }
                 } catch (CSVMissingDataException e) {
                     String[] log = e.getMessage().split(splitter);
-                    System.out.println(log[0]);
+                    System.err.println(log[0]+"\n");
                     logData(log[1]);
                 }
             }
@@ -185,7 +184,7 @@ public class CSV2JSON {
             } catch (CSVFilelnvalidException e) {
                 // if the CSV file is invalid, log the error message
                 String[] log = e.getMessage().split(splitter);
-                System.out.println(log[0]);
+                System.err.println(log[0]);
                 logData(log[1]);
             }
         }
@@ -213,7 +212,7 @@ public class CSV2JSON {
         processFilesForValidation(input);
 
         if (count > 0){
-            System.out.println("This are the list of generated JSON files ...");
+            System.out.println("This are the list of generated JSON files ...\n");
             for (String s: outputFiles
                  ) {
                 System.out.println(s);
