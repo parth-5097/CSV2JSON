@@ -58,12 +58,6 @@ public class CSV2JSON {
             String validRows = null;
             int inValidHeader = 0;
 
-            if (!head.contains(",")) {
-                throw new CSVFilelnvalidException("File " + fileName + " is invalid: header is invalid.\n" +
-                        "File is not converted to JSON.\n"+splitter+"File " + fileName + " is invalid.\n" +
-                        "File has invalid header");
-            }
-
             for (int i = 0; i < headers.length; i++){
                 if (headers[i].isEmpty() || headers[i].isBlank()){
                     inValidHeader++;
@@ -86,17 +80,21 @@ public class CSV2JSON {
                     String data = reader.nextLine();
                     String[] rows = data.split(regex, 99);
 
-                    if (rows.length != headers.length) {
-                        throw new CSVMissingDataException("In file " + fileName
-                                + " not converted to JSON: Invalid data for line."+ lineCount + splitter
-                                + "In file " + fileName + " line " + lineCount + "\nLine "+lineCount+" has invalid data.");
-                    }
-
                     for (int i = 0; i < rows.length; i++) {
                         if (rows[i].isEmpty() || rows[i].isBlank()){
                             isValid = false;
                             rows[i] = "***";
                         }
+                    }
+
+                    if (headers.length > rows.length) {
+                        isValid = false;
+                        rows[rows.length - 1] = "***";
+                    }
+                    if (headers.length < rows.length) {
+                        throw new CSVMissingDataException("In file " + fileName
+                                + " not converted to JSON: Invalid data for line "+ lineCount + splitter
+                                + "In file " + fileName + " line " + lineCount + "\nLine "+lineCount+" has invalid data.\n");
                     }
 
                     if(!isValid) {
@@ -110,7 +108,6 @@ public class CSV2JSON {
                     } else {
                         validRows += splitter + data;
                     }
-
                 } catch (CSVMissingDataException e) {
                     String[] log = e.getMessage().split(splitter);
                     System.out.println(log[0]);
